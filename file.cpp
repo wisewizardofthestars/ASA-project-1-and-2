@@ -11,20 +11,19 @@ int solver(const vector<int>& rows) {
     auto min_ptr = max_element(rows.rbegin(), rows.rend());
 
     int max_value = *max_ptr;
-    int r = max_ptr - rows.begin();
-    int max_index = rows.size() - 1 - (max_ptr - rows.begin());
-    int min_index = rows.size() - 1 - distance(rows.rbegin(), min_ptr);
+    int min_index = max_ptr - rows.begin();
+    int max_index = rows.size() - 1 - distance(rows.rbegin(), min_ptr);
 
     if (max_value == 0) {
         return 1;
     }
 
-    int max_square = min(max_value, (min_index - r) + 1);
+    int max_square = min(max_value, (max_index - min_index) + 1);
 
     for (int i = 1; i <= max_square; i++) {
         vector<int> rows_copy = rows;
         for (int j = 0; j < i; j++) {
-            rows_copy[r + j] -= i;
+            rows_copy[min_index + j] -= i;
         }
         total += solver(rows_copy);
     }
