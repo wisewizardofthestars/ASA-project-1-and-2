@@ -2,19 +2,28 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 
 using namespace std;
 
 int solver(const vector<int>& rows) {
+    static map<vector<int>, int> memoized_values;
+    if (memoized_values.find(rows) != memoized_values.end()) {
+        return memoized_values[rows];
+    }
     int total = 0;
     auto max_ptr = max_element(rows.begin(), rows.end());
-    auto min_ptr = max_element(rows.rbegin(), rows.rend());
 
     int max_value = *max_ptr;
     int min_index = max_ptr - rows.begin();
-    int max_index = rows.size() - 1 - distance(rows.rbegin(), min_ptr);
+    int max_index = min_index;
+    auto next_ptr = next(max_ptr);
+    while (*next_ptr == max_value) {
+        max_index++;
+        next_ptr = next(next_ptr);
+    }
 
-    if (max_value == 0) {
+    if (max_value == 1) {
         return 1;
     }
 
@@ -27,6 +36,7 @@ int solver(const vector<int>& rows) {
         }
         total += solver(rows_copy);
     }
+    memoized_values[rows] = total;
     return total;
 }
 
