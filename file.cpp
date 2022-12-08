@@ -6,18 +6,18 @@
 
 using namespace std;
 
-long solver(const vector<long>& rows) {
-    static map<vector<long>, long> memoized_values;
+long long int solver(const vector<long long int>& rows) {
+    static map<vector<long long int>, long long int> memoized_values;
     if (memoized_values.find(rows) != memoized_values.end()) {
         return memoized_values[rows];
     }
 
-    long total = 0;
+    long long int total = 0;
     auto max_ptr = max_element(rows.begin(), rows.end());
 
-    long max_value = *max_ptr;
-    long min_index = max_ptr - rows.begin();
-    long max_index = min_index;
+    long long int max_value = *max_ptr;
+    long long int min_index = max_ptr - rows.begin();
+    long long int max_index = min_index;
     auto next_ptr = next(max_ptr);
     while (*next_ptr == max_value) {
         max_index++;
@@ -28,11 +28,11 @@ long solver(const vector<long>& rows) {
         return 1;
     }
 
-    long max_square = min(max_value, (max_index - min_index) + 1);
+    long long int max_square = min(max_value, (max_index - min_index) + 1);
 
-    for (long i = 1; i <= max_square; i++) {
-        vector<long> rows_copy = rows;
-        for (long j = 0; j < i; j++) {
+    for (long long int i = 1; i <= max_square; i++) {
+        vector<long long int> rows_copy = rows;
+        for (long long int j = 0; j < i; j++) {
             rows_copy[min_index + j] -= i;
         }
         total += solver(rows_copy);
@@ -42,17 +42,17 @@ long solver(const vector<long>& rows) {
 }
 
 int main() {
-    vector<long> row_sizes;
+    vector<long long int> row_sizes;
     string line;
-    long i = 0;
+    long long int i = 0;
     while (getline(cin, line)) {
         if (i > 1) {
-            long row_size = stoi(line);
+            long long int row_size = stoi(line);
             row_sizes.push_back(row_size);
         }
         i++;
     }
-    long ans = solver(row_sizes);
+    long long int ans = solver(row_sizes);
     cout << ans << endl;
 
     return 0;
