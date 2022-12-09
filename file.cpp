@@ -1,23 +1,42 @@
 #include <algorithm>
 #include <iostream>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 using namespace std;
 
-long long int solver(const vector<long long int>& rows) {
-    static map<vector<long long int>, long long int> memoized_values;
-    if (memoized_values.find(rows) != memoized_values.end()) {
-        return memoized_values[rows];
+namespace std {
+template <>
+struct hash<vector<unsigned long long int>> {
+    std::size_t operator()(std::vector<unsigned long long int> const& vec) const {
+        std::size_t seed = vec.size();
+        for (auto x : vec) {
+            x = ((x >> 16) ^ x) * 0x45d9f3b;
+            x = ((x >> 16) ^ x) * 0x45d9f3b;
+            x = (x >> 16) ^ x;
+            seed ^= x + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        }
+        return seed;
+    }
+};
+}  // namespace std
+
+unsigned long long int solver(const vector<unsigned long long int>& rows) {
+    hash<vector<unsigned long long int>> hash_fn;
+    static map<size_t, unsigned long long int> memoized_values;
+    auto h = hash_fn(rows);
+
+    if (memoized_values.find(h) != memoized_values.end()) {
+        return memoized_values[h];
     }
 
-    long long int total = 0;
+    unsigned long long int total = 0;
     auto max_ptr = max_element(rows.begin(), rows.end());
 
-    long long int max_value = *max_ptr;
-    long long int min_index = max_ptr - rows.begin();
-    long long int max_index = min_index;
+    unsigned long long int max_value = *max_ptr;
+    unsigned long long int min_index = max_ptr - rows.begin();
+    unsigned long long int max_index = min_index;
     auto next_ptr = next(max_ptr);
     while (*next_ptr == max_value) {
         max_index++;
@@ -28,31 +47,31 @@ long long int solver(const vector<long long int>& rows) {
         return 1;
     }
 
-    long long int max_square = min(max_value, (max_index - min_index) + 1);
+    unsigned long long int max_square = min(max_value, (max_index - min_index) + 1);
 
-    for (long long int i = 1; i <= max_square; i++) {
-        vector<long long int> rows_copy = rows;
-        for (long long int j = 0; j < i; j++) {
+    for (unsigned long long int i = 1; i <= max_square; i++) {
+        vector<unsigned long long int> rows_copy = rows;
+        for (unsigned long long int j = 0; j < i; j++) {
             rows_copy[min_index + j] -= i;
         }
         total += solver(rows_copy);
     }
-    memoized_values[rows] = total;
+    memoized_values[h] = total;
     return total;
 }
 
 int main() {
-    vector<long long int> row_sizes;
+    vector<unsigned long long int> row_sizes;
     string line;
-    long long int i = 0;
+    unsigned long long int i = 0;
     while (getline(cin, line)) {
         if (i > 1) {
-            long long int row_size = stoi(line);
+            unsigned long long int row_size = stoi(line);
             row_sizes.push_back(row_size);
         }
         i++;
     }
-    long long int ans = solver(row_sizes);
+    unsigned long long int ans = solver(row_sizes);
     cout << ans << endl;
 
     return 0;
