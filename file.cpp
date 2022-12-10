@@ -1,6 +1,5 @@
 #include <algorithm>
-#include <iostream>
-#include <map>
+#include <tr1/unordered_map>
 #include <string>
 #include <vector>
 
@@ -24,7 +23,7 @@ struct hash<vector<int>> {
 
 unsigned long long int solver(const vector<int>& rows) {
     hash<vector<int>> hash_fn;
-    static map<size_t, unsigned long long int> memoized_values;
+    static tr1::unordered_map<size_t, unsigned long long int> memoized_values;
     auto h = hash_fn(rows);
 
     if (memoized_values.find(h) != memoized_values.end()) {
