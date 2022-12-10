@@ -24,7 +24,7 @@ struct hash<vector<int>> {
 
 unsigned long long int solver(const vector<int>& rows) {
     hash<vector<int>> hash_fn;
-    static map<size_t, int> memoized_values;
+    static map<size_t, unsigned long long int> memoized_values;
     auto h = hash_fn(rows);
 
     if (memoized_values.find(h) != memoized_values.end()) {
@@ -35,7 +35,7 @@ unsigned long long int solver(const vector<int>& rows) {
     auto max_ptr = max_element(rows.begin(), rows.end());
 
     int max_value = *max_ptr;
-    int min_index = max_ptr - rows.begin();
+    int min_index = distance(rows.begin(), max_ptr);
     int max_index = min_index;
     auto next_ptr = next(max_ptr);
     while (*next_ptr == max_value) {
@@ -73,7 +73,7 @@ int main() {
         row_sizes.push_back(row_size);
     }
     unsigned long long int ans = solver(row_sizes);
-    cout << ans << endl;
+    printf("%llu\n", ans);
 
     return 0;
 }
