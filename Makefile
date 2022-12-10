@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -O3 -std=c++11 -Wall -lm
+CPPFLAGS = -O3 -std=c++11 -Wall -Wextra -Werror -lm
 TESTS = $(wildcard tests/*.in)
 SHELL := /bin/bash
 MAKEFLAGS += -j
