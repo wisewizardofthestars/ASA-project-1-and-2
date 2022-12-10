@@ -8,8 +8,8 @@ using namespace std;
 
 namespace std {
 template <>
-struct hash<vector<unsigned long long int>> {
-    std::size_t operator()(std::vector<unsigned long long int> const& vec) const {
+struct hash<vector<int>> {
+    std::size_t operator()(std::vector<int> const& vec) const {
         std::size_t seed = vec.size();
         for (auto x : vec) {
             x = ((x >> 16) ^ x) * 0x45d9f3b;
@@ -22,9 +22,9 @@ struct hash<vector<unsigned long long int>> {
 };
 }  // namespace std
 
-unsigned long long int solver(const vector<unsigned long long int>& rows) {
-    hash<vector<unsigned long long int>> hash_fn;
-    static map<size_t, unsigned long long int> memoized_values;
+unsigned long long int solver(const vector<int>& rows) {
+    hash<vector<int>> hash_fn;
+    static map<size_t, int> memoized_values;
     auto h = hash_fn(rows);
 
     if (memoized_values.find(h) != memoized_values.end()) {
@@ -44,14 +44,16 @@ unsigned long long int solver(const vector<unsigned long long int>& rows) {
     }
 
     if (max_value < 2) {
+        if (max_value == 0 && memoized_values.size() == 0)
+            return 0;
         return 1;
     }
 
     unsigned long long int max_square = min(max_value, (max_index - min_index) + 1);
 
-    for (unsigned long long int i = 1; i <= max_square; i++) {
-        vector<unsigned long long int> rows_copy = rows;
-        for (unsigned long long int j = 0; j < i; j++) {
+    for (int i = 1; i <= max_square; i++) {
+        vector<int> rows_copy = rows;
+        for (int j = 0; j < i; j++) {
             rows_copy[min_index + j] -= i;
         }
         total += solver(rows_copy);
@@ -61,12 +63,12 @@ unsigned long long int solver(const vector<unsigned long long int>& rows) {
 }
 
 int main() {
-    vector<unsigned long long int> row_sizes;
+    vector<int> row_sizes;
     string line;
-    unsigned long long int i = 0;
+    int i = 0;
     while (getline(cin, line)) {
         if (i > 1) {
-            unsigned long long int row_size = stoi(line);
+            int row_size = stoi(line);
             row_sizes.push_back(row_size);
         }
         i++;
