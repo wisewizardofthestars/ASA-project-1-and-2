@@ -34,9 +34,9 @@ unsigned long long int solver(const vector<int>& rows) {
     unsigned long long int total = 0;
     auto max_ptr = max_element(rows.begin(), rows.end());
 
-    unsigned long long int max_value = *max_ptr;
-    unsigned long long int min_index = max_ptr - rows.begin();
-    unsigned long long int max_index = min_index;
+    int max_value = *max_ptr;
+    int min_index = max_ptr - rows.begin();
+    int max_index = min_index;
     auto next_ptr = next(max_ptr);
     while (*next_ptr == max_value) {
         max_index++;
@@ -44,12 +44,11 @@ unsigned long long int solver(const vector<int>& rows) {
     }
 
     if (max_value < 2) {
-        if (max_value == 0 && memoized_values.size() == 0)
-            return 0;
+        if (max_value == 0 && memoized_values.size() == 0) return 0;
         return 1;
     }
 
-    unsigned long long int max_square = min(max_value, (max_index - min_index) + 1);
+    int max_square = min(max_value, (max_index - min_index) + 1);
 
     for (int i = 1; i <= max_square; i++) {
         vector<int> rows_copy = rows;
@@ -65,13 +64,13 @@ unsigned long long int solver(const vector<int>& rows) {
 int main() {
     vector<int> row_sizes;
     string line;
-    int i = 0;
-    while (getline(cin, line)) {
-        if (i > 1) {
-            int row_size = stoi(line);
-            row_sizes.push_back(row_size);
-        }
-        i++;
+    int nLines, nCols, row_size;
+
+    scanf("%d", &nLines);
+    scanf("%d", &nCols);
+    for (int i = 0; i < nLines; i++) {
+        scanf("%d", &row_size);
+        row_sizes.push_back(row_size);
     }
     unsigned long long int ans = solver(row_sizes);
     cout << ans << endl;
