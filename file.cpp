@@ -32,28 +32,34 @@ unsigned long long int solver(const vector<int>& rows) {
     }
 
     unsigned long long int total = 0;
-    auto max_ptr = max_element(rows.begin(), rows.end());
 
-    int max_value = *max_ptr;
-    int min_index = distance(rows.begin(), max_ptr);
-    int max_index = min_index;
-    auto next_ptr = next(max_ptr);
-    while (*next_ptr == max_value) {
-        max_index++;
-        next_ptr = next(next_ptr);
+    int prev = 0;
+    int max_value = 0;
+    int start = 0;
+    int d = 0;
+    for (auto v : rows) {
+        if (v > max_value) {
+            max_value = v;
+            start += d;
+            d = 1;
+        } else if (v == prev) {
+            d++;
+        } else if (v < prev) {
+            break;
+        }
+        prev = v;
     }
 
-    if (max_value < 2) {
-        if (max_value == 0 && memoized_values.size() == 0) return 0;
+    if (max_value == 0) {
         return 1;
     }
 
-    int max_square = min(max_value, (max_index - min_index) + 1);
+    int max_square = min(max_value, d);
 
     for (int i = 1; i <= max_square; i++) {
         vector<int> rows_copy = rows;
         for (int j = 0; j < i; j++) {
-            rows_copy[min_index + j] -= i;
+            rows_copy[start + j] -= i;
         }
         total += solver(rows_copy);
     }
@@ -71,6 +77,10 @@ int main() {
     for (int i = 0; i < nLines; i++) {
         scanf("%d", &row_size);
         row_sizes.push_back(row_size);
+    }
+    if (*max_element(row_sizes.begin(), row_sizes.end()) == 0) {
+        printf("0\n");
+        return 0;
     }
     unsigned long long int ans = solver(row_sizes);
     printf("%llu\n", ans);
