@@ -5,26 +5,17 @@
 
 using namespace std;
 
-namespace std {
-template <>
-struct hash<vector<int>> {
-    std::size_t operator()(std::vector<int> const& vec) const {
-        std::size_t seed = vec.size();
-        for (auto x : vec) {
-            x = ((x >> 16) ^ x) * 0x45d9f3b;
-            x = ((x >> 16) ^ x) * 0x45d9f3b;
-            x = (x >> 16) ^ x;
-            seed ^= x + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        }
-        return seed;
+size_t hash_vector(const vector<int>& v) {
+    size_t seed = v.size();
+    for (auto i : v) {
+        seed ^= i + 0x9e3779b9 + (seed << 6) + (seed >> 2);
     }
-};
-}  // namespace std
+    return seed;
+}
 
 unsigned long long int solver(const vector<int>& rows) {
-    hash<vector<int>> hash_fn;
+    size_t h = hash_vector(rows);
     static tr1::unordered_map<size_t, unsigned long long int> memoized_values;
-    auto h = hash_fn(rows);
 
     if (memoized_values.find(h) != memoized_values.end()) {
         return memoized_values[h];
