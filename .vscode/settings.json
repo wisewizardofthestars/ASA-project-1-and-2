@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.pl": "prolog",
+        "sxhkdrc": "sxhkdrc",
+        "*.html": "jinja-html",
+        "iostream": "cpp"
+    }
+}
