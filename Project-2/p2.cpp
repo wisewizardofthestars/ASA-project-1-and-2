@@ -4,63 +4,79 @@
 
 using namespace std;
 
-#define edge pair<int, int>
+struct Graph {
+    int V, E;
+    vector<pair<int, pair<int, int>>> edges;
 
-class Graph {
-   private:
-    vector<pair<int, edge> > G;  // graph
-    vector<pair<int, edge> > T;  // mst
-    int *parent;
-    int V;  // number of vertices/nodes in graph
-   public:
-    Graph(int V) {
-        parent = new int[V];
-
-        for (int i = 0; i < V; i++) parent[i] = i;
-
-        G.clear();
-        T.clear();
+    Graph(int V, int E) {
+        this->V = V;
+        this->E = E;
     }
-    void add_edge(int u, int v, int w) {
-        G.push_back(make_pair(w, edge(u, v)));
+
+    void add_edge(int u, int v, int w) { edges.push_back({w, {u, v}}); }
+
+    int calculate_weight();
+};
+
+struct Sets {
+    int *parent, *rnk;
+    int n;
+
+    Sets(int n) {
+        this->n = n;
+        parent = new int[n + 1];
+        rnk = new int[n + 1];
+
+        for (int i = 0; i <= n; i++) {
+            rnk[i] = 0;
+            parent[i] = i;
+        }
     }
-    int find_set(int i) {
-        // If i is the parent of itself
-        if (i == parent[i])
-            return i;
+
+    int find(int u) {
+        if (u != parent[u]) parent[u] = find(parent[u]);
+        return parent[u];
+    }
+
+    void merge(int x, int y) {
+        x = find(x), y = find(y);
+        if (rnk[x] > rnk[y])
+            parent[y] = x;
         else
-            // Else if i is not the parent of itself
-            // Then i is not the representative of his set,
-            // so we recursively call Find on its parent
-            return find_set(parent[i]);
-    }
-    void union_set(int u, int v) { parent[u] = parent[v]; }
-    void kruskal() {
-        int uRep, vRep;
-        sort(G.begin(), G.end());
-        for (size_t i = 0; i < G.size(); i++) {
-            uRep = find_set(G[i].second.first);
-            vRep = find_set(G[i].second.second);
-            if (uRep != vRep) {
-                T.push_back(G[i]);  // add to tree
-                union_set(uRep, vRep);
-            }
-        }
-    }
-    void print() {
-        for (size_t i = 0; i < T.size(); i++) {
-            cout << T[i].second.first << " - " << T[i].second.second << endl;
-        }
+            parent[x] = y;
+        if (rnk[x] == rnk[y]) rnk[y]++;
     }
 };
 
+int Graph::calculate_weight() {
+    int total_weight = 0;
+    sort(edges.rbegin(), edges.rend());  // sort in descending order
+
+    Sets sets(V);
+
+    vector<pair<int, pair<int, int>>>::iterator it;
+    for (it = edges.begin(); it != edges.end(); it++) {
+        int u = it->second.first;
+        int v = it->second.second;
+
+        int set_u = sets.find(u);
+        int set_v = sets.find(v);
+
+        if (set_u != set_v) {
+            total_weight += it->first;
+            sets.merge(set_u, set_v);
+        }
+    }
+
+    return total_weight;
+}
+
 int main() {
-    // Kruskal's algorithm
     int v, e;
     scanf("%d", &v);
     scanf("%d", &e);
 
-    Graph g(v);
+    Graph g(v, e);
 
     for (int i = 0; i < e; i++) {
         int u, v, w;
@@ -68,8 +84,9 @@ int main() {
 
         g.add_edge(u, v, w);
     }
-    g.kruskal();
-    g.print();
+    int mst_wt = g.calculate_weight();
+
+    cout << mst_wt << endl;
 
     return 0;
 }
