@@ -4,31 +4,19 @@
 
 using namespace std;
 
-struct Graph {
-    int V, E;
-    vector<pair<int, pair<int, int>>> edges;
-
-    Graph(int V, int E) {
-        this->V = V;
-        this->E = E;
-    }
-
-    void add_edge(int u, int v, int w) { edges.push_back({w, {u, v}}); }
-
-    int calculate_weight();
-};
-
-struct Sets {
-    int *parent, *rnk;
+class Sets {
+   private:
+    int *parent, *rank;
     int n;
 
+   public:
     Sets(int n) {
         this->n = n;
         parent = new int[n + 1];
-        rnk = new int[n + 1];
+        rank = new int[n + 1];
 
         for (int i = 0; i <= n; i++) {
-            rnk[i] = 0;
+            rank[i] = 0;
             parent[i] = i;
         }
     }
@@ -40,36 +28,51 @@ struct Sets {
 
     void merge(int x, int y) {
         x = find(x), y = find(y);
-        if (rnk[x] > rnk[y])
+        if (rank[x] > rank[y])
             parent[y] = x;
         else
             parent[x] = y;
-        if (rnk[x] == rnk[y]) rnk[y]++;
+        if (rank[x] == rank[y]) rank[y]++;
     }
 };
 
-int Graph::calculate_weight() {
-    int total_weight = 0;
-    sort(edges.rbegin(), edges.rend());  // sort in descending order
+class Graph {
+   private:
+    int V, E;
+    vector<pair<int, pair<int, int>>> edges;
 
-    Sets sets(V);
-
-    vector<pair<int, pair<int, int>>>::iterator it;
-    for (it = edges.begin(); it != edges.end(); it++) {
-        int u = it->second.first;
-        int v = it->second.second;
-
-        int set_u = sets.find(u);
-        int set_v = sets.find(v);
-
-        if (set_u != set_v) {
-            total_weight += it->first;
-            sets.merge(set_u, set_v);
-        }
+   public:
+    Graph(int V, int E) {
+        this->V = V;
+        this->E = E;
     }
 
-    return total_weight;
-}
+    void add_edge(int u, int v, int w) {
+        edges.push_back(make_pair(w, make_pair(u, v)));
+    }
+
+    int calculate_weight() {
+        int total_weight = 0;
+        Sets sets(V);
+
+        sort(edges.rbegin(), edges.rend());  // sort in descending order
+
+        for (auto it = edges.begin(); it != edges.end(); it++) {
+            int u = it->second.first;
+            int v = it->second.second;
+
+            int set_u = sets.find(u);
+            int set_v = sets.find(v);
+
+            if (set_u != set_v) {
+                total_weight += it->first;
+                sets.merge(set_u, set_v);
+            }
+        }
+
+        return total_weight;
+    }
+};
 
 int main() {
     int v, e;
@@ -84,9 +87,8 @@ int main() {
 
         g.add_edge(u, v, w);
     }
-    int mst_wt = g.calculate_weight();
+    int mst_weight = g.calculate_weight();
 
-    cout << mst_wt << endl;
-
+    cout << mst_weight << endl;
     return 0;
 }
